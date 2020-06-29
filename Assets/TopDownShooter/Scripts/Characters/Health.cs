@@ -2,17 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+namespace TopDownShooter
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Health
     {
-        
-    }
+        private int health;
+        private int maxHealth;
+        public void SetMaxHealth(int maxHealth)
+        {
+            this.maxHealth = maxHealth;
+            health = maxHealth;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public int Damage(int damValue)
+        {
+            return health -= damValue;
+        }
+
+        public void Heal(int healValue)
+        {
+            health += healValue;
+        }
+
+        public void Revive()
+        {
+            health = maxHealth;
+        }
+
+
     }
 }
