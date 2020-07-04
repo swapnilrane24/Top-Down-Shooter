@@ -24,6 +24,11 @@ namespace TopDownShooter
             {
                 aiControl.SwitchState(StateType.PATROL);
             }
+
+            if (aiControl.Target != null)
+            {
+                aiControl.SwitchState(StateType.CHASE);
+            }
         }
 
         public void Exit()

@@ -163,7 +163,7 @@ MonoBehaviour:
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &4208494177824386326
 GameObject:
@@ -318,7 +318,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4208494178515475884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35029e46b1c6eb4ca18b0fc3a0d6311, type: 3}
+  m_Script: {fileID: 11500000, guid: a40bda667bd7b904ea3e5015f6d8e14d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   barImage: {fileID: 4208494177595496624}

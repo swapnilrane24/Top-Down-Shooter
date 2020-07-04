@@ -6,10 +6,9 @@ using System;
 namespace TopDownShooter
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour
+    public abstract class Character : MonoBehaviour
     {
         protected Health health;
-
         
         public Action updateCallbacks;
 

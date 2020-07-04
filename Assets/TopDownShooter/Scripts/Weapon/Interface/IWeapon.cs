@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,11 +6,15 @@ namespace TopDownShooter
 {
     public interface IWeapon
     {
-        void SetWeaponParent(Transform parent);
+        bool isReloading { get; }
+        float MagzineFillRatio { get; }
+        void SetWeaponParent(Transform parent, Action<bool> coolDownCallback);
         void ActivateWeapon();
         void DeactivateWeapon();
         void Fire();
         void ReleseFire();
         void Reload();
+
+        void OnUpdate();
     }
 }

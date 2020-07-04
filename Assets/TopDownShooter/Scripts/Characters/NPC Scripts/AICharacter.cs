@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace TopDownShooter
 {
     public class AICharacter : Character, IEnemyGroup
     {
+        [SerializeField] private AIInfo aIInfo;
+
         private PlayerDetector targetDetector;
 
         private AIControl aiControl;
         private HealthBarScript healthBarScript;
+        private Transform enemyModel;
 
         public event EventHandler OnKilled;
 
@@ -35,9 +39,20 @@ namespace TopDownShooter
         {
             base.Start();
             health.SetMaxHealth(100);
+            enemyModel = transform.Find("EnemyModel");
             targetDetector = gameObject.GetComponentInChildren<PlayerDetector>();
-            aiControl.Initialize(gameObject, this, targetDetector);
             healthBarScript = gameObject.GetComponentInChildren<HealthBarScript>();
+
+            aiControl.Initialize(enemyModel, this, targetDetector, aIInfo);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Handles.color = Color.blue;
+            Handles.DrawWireDisc(transform.position - Vector3.up * 0.98f, transform.up, aIInfo.AttackRange);
+        }
+#endif
+
     }
 }

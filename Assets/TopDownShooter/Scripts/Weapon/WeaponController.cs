@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,46 +9,74 @@ namespace TopDownShooter
         [SerializeField] private GameObject muzzleFlash;
 
         private WeaponStats weaponStats;
-        private ProjectileController projectileController;
-        private float currentTime;
-
+        private ProjectileController projectilePrefab;
+        private float currentFireTime, currentReloadTime, magzineFillRatio;
+        private int currentMagzineFillAmount;
         private List<ProjectileController> deactiveProjectile;
+        private Action<bool> coolDownCallback;
+
+        public bool reloading = false;
 
         public Transform Position { get => muzzleFlash.transform; }
+        public bool isReloading => reloading;
+        public float MagzineFillRatio => magzineFillRatio;
 
         public void SetWeaponStats(WeaponStats weaponStats, ProjectileController projectileController)
         {
             this.weaponStats = weaponStats;
-            this.projectileController = projectileController;
+            this.projectilePrefab = projectileController;
+            currentMagzineFillAmount = weaponStats.magzineCapacity;
             deactiveProjectile = new List<ProjectileController>();
 
             for (int i = 0; i < 5; i++)
             {
                 ProjectileController projectile = Instantiate(projectileController.gameObject, transform).GetComponent<ProjectileController>();
-                projectile.SetProjectileParent(this);
+                projectile.SetProjectileParent(this, weaponStats.damage);
                 deactiveProjectile.Add(projectile);
                 projectile.gameObject.SetActive(false);
             }
+
+            magzineFillRatio = (float)currentMagzineFillAmount / weaponStats.magzineCapacity;
         }
 
         public virtual void ReleseFire()
         {
-            currentTime = 0;
+            currentFireTime = 0;
         }
 
         public virtual void Fire()
         {
-            currentTime -= Time.deltaTime;
-            if (currentTime <= 0)
+            if (!reloading)
             {
-                currentTime = weaponStats.fireRate;
-                CreateProjectile();
+                currentFireTime -= Time.deltaTime;
+                if (currentFireTime <= 0)
+                {
+                    currentFireTime = weaponStats.fireRate;
+                    CreateProjectile();
+                }
+                magzineFillRatio = (float)currentMagzineFillAmount / weaponStats.magzineCapacity;
             }
         }
 
         public virtual void Reload()
         {
             
+        }
+
+        public void OnUpdate()
+        {
+            if (reloading)
+            {
+                currentReloadTime += Time.deltaTime;
+                magzineFillRatio = currentReloadTime / weaponStats.reloadTime;
+                if (currentReloadTime >= weaponStats.reloadTime)
+                {
+                    currentMagzineFillAmount = weaponStats.magzineCapacity;
+                    reloading = false;
+                    currentReloadTime = 0;
+                    coolDownCallback?.Invoke(reloading);
+                }
+            }
         }
 
         protected virtual void CreateProjectile()
@@ -65,10 +93,16 @@ namespace TopDownShooter
             }
             else
             {
-                projectile = Instantiate(projectileController.gameObject).GetComponent<ProjectileController>();
-                projectile.SetProjectileParent(this);
+                projectile = Instantiate(projectilePrefab.gameObject).GetComponent<ProjectileController>();
+                projectile.SetProjectileParent(this, weaponStats.damage);
                 projectile.transform.position = muzzleFlash.transform.position;
                 projectile.SetDirection(transform.forward, weaponStats.range);
+            }
+            currentMagzineFillAmount--;
+            if (currentMagzineFillAmount <= 0)
+            {
+                reloading = true;
+                coolDownCallback?.Invoke(reloading);
             }
         }
 
@@ -88,16 +122,11 @@ namespace TopDownShooter
             deactiveProjectile.Add(projectile);
         }
 
-        public void SetWeaponParent(Transform parent)
+        public void SetWeaponParent(Transform parent, Action<bool> coolDownCallback)
         {
             transform.SetParent(parent.transform);
             transform.localPosition = Vector3.zero;
+            this.coolDownCallback = coolDownCallback;
         }
-
-        //private void OnDrawGizmos()
-        //{
-        //    Gizmos.color = Color.red;
-        //    Gizmos.DrawLine(muzzleFlash.transform.position, transform.parent.forward * weaponStats.range);
-        //}
     }
 }

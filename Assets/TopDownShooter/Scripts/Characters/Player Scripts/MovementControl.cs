@@ -8,12 +8,12 @@ namespace TopDownShooter
     {
         private CharacterController controller;
         private float turnSmoothVelocity;
-        private Character characterScript;
+        private PlayerCharacter characterScript;
         private CharacterMovementStats movementStats;
         private InputControl inputControl;
         private EnemyDetector targetDetector;
 
-        public MovementControl(CharacterController controller, Character characterScript,
+        public MovementControl(CharacterController controller, PlayerCharacter characterScript,
             CharacterMovementStats movementStats, InputControl inputControl, EnemyDetector targetDetector)
         {
             this.controller = controller;
@@ -36,16 +36,18 @@ namespace TopDownShooter
                 if (targetDetector.Target == null)
                 {
                     float targetAngle = Mathf.Atan2(inputControl.Direction.x, inputControl.Direction.z) * Mathf.Rad2Deg;
-                    float angle = Mathf.SmoothDampAngle(characterScript.transform.eulerAngles.y, targetAngle,
+                    float angle = Mathf.SmoothDampAngle(characterScript.PlayerModel.eulerAngles.y, targetAngle,
                                                         ref turnSmoothVelocity, movementStats.turnSmoothTime);
-                    characterScript.transform.rotation = Quaternion.Euler(0f, angle, 0f);
+                    //characterScript.transform.rotation = Quaternion.Euler(0f, angle, 0f);
+                    characterScript.PlayerModel.rotation = Quaternion.Euler(0f, angle, 0f);
                 }
                 else
                 {
                     Vector3 targetPostition = new Vector3(targetDetector.Target.transform.position.x,
                                            characterScript.transform.position.y,
                                            targetDetector.Target.transform.position.z);
-                    characterScript.transform.LookAt(targetPostition);
+                    //characterScript.transform.LookAt(targetPostition);
+                    characterScript.PlayerModel.LookAt(targetPostition);
                 }
 
                 controller.Move(inputControl.Direction * movementStats.moveSpeed * Time.deltaTime);

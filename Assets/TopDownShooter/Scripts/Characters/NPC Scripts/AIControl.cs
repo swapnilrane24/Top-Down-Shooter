@@ -10,24 +10,28 @@ namespace TopDownShooter
         protected IState idleState, chaseState, patrolState, attackState;
         protected EnemyType enemyType = EnemyType.DUMB;
 
-        private float stopChaseRange;
         private Transform target;
-        private Character character;
-        private GameObject parentObj;
+        private AICharacter character;
         private PlayerDetector playerDetector;
+        private Transform modelObj, parentObj;
+        private AIInfo aIInfo;
 
-        public float StopChaseRange => stopChaseRange;
+        public AIInfo AIInfo => aIInfo;
         public EnemyType EnemyType { get { return enemyType; } }
-        public Transform Target { get { return target; } }
-        public GameObject ParentObj { get { return parentObj; } }
+        public Transform Target { get { return target; } set { target = value; } }
+        public Transform AIModel { get { return modelObj; } }
+        public Transform ParentObj { get { return parentObj; } }
 
-        public void Initialize(GameObject parent, Character character, PlayerDetector targetDetector)
+        public void Initialize(Transform modelObj, AICharacter character, PlayerDetector targetDetector, AIInfo aIInfo)
         {
+            this.aIInfo = aIInfo;
+            this.aIInfo.StopChaseRange = targetDetector.StopChaseRange;
             this.character = character;
-            parentObj = parent;
-            this.playerDetector = targetDetector;
+            parentObj = character.gameObject.transform;
+            this.modelObj = modelObj;
+            playerDetector = targetDetector;
+            playerDetector.SetAIController(this);
             this.character.updateCallbacks += OnUpdate;
-            stopChaseRange = this.playerDetector.StopChaseRange;
             SetStates();
         }
 
@@ -41,14 +45,6 @@ namespace TopDownShooter
         public virtual void OnUpdate()
         {
             currentState.Execute();
-
-            if (playerDetector.Target != null)
-            {
-                if (currentState != chaseState)
-                {
-                    SwitchState(StateType.CHASE);
-                }
-            }
         }
 
         public void SwitchState(StateType stateType)
@@ -57,11 +53,9 @@ namespace TopDownShooter
             switch (stateType)
             {
                 case StateType.IDLE:
-                    target = null;
                     currentState = idleState;
                     break;
                 case StateType.CHASE:
-                    target = playerDetector.Target.transform;
                     currentState = chaseState;
                     break;
                 case StateType.PATROL:

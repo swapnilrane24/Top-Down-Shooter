@@ -7,7 +7,6 @@ namespace TopDownShooter
     public class LookAtCam : MonoBehaviour
     {
         private Camera targetCam;
-        private Quaternion finalRotation;
 
         private void Awake()
         {
@@ -16,7 +15,7 @@ namespace TopDownShooter
 
         private void Update()
         {
-            transform.LookAt(targetCam.transform.position);
+            transform.rotation = Quaternion.LookRotation(transform.position - targetCam.transform.position);
         }
     }
 }

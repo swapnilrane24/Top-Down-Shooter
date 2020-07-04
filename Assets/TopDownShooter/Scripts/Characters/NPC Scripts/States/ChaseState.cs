@@ -18,15 +18,21 @@ namespace TopDownShooter
         {
             if (aiControl.Target)
             {
-                direction = (aiControl.Target.position - aiControl.ParentObj.transform.position).normalized;
+                direction = (aiControl.Target.position - aiControl.ParentObj.position).normalized;
                 Rotate();
 
-                aiControl.ParentObj.transform.Translate(5 * direction * Time.deltaTime, Space.World);
-
-                if (Vector3.Distance(aiControl.ParentObj.transform.position, aiControl.Target.position) > aiControl.StopChaseRange)
+                if (Vector3.Distance(aiControl.ParentObj.position, aiControl.Target.position) > aiControl.AIInfo.AttackRange)
                 {
-                    aiControl.SwitchState(StateType.IDLE);
+                    aiControl.ParentObj.Translate(5 * direction * Time.deltaTime, Space.World);
                 }
+                else
+                {
+                    aiControl.SwitchState(StateType.ATTACK);
+                }
+            }
+            else
+            {
+                aiControl.SwitchState(StateType.IDLE);
             }
         }
 
@@ -38,9 +44,9 @@ namespace TopDownShooter
         void Rotate()
         {
             Vector3 targetPostition = new Vector3(aiControl.Target.position.x,
-                                                aiControl.ParentObj.transform.position.y,
+                                                aiControl.ParentObj.position.y,
                                                 aiControl.Target.position.z);
-            aiControl.ParentObj.transform.LookAt(targetPostition);
+            aiControl.AIModel.LookAt(targetPostition);
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using UnityEngine;
 
 namespace TopDownShooter
 {
@@ -9,59 +6,58 @@ namespace TopDownShooter
     {
         [SerializeField] private GameObject weaponHolder;
 
-        private IWeapon primaryWeapon, secondaryWeapon;
         private WeaponFactory weaponFactory;
-
-        private IWeapon activeWeapon;
-        private InputControl inputControl;
+        private PlayerCharacter playerCharacter;
+        private WeaponBarScript weaponBarScript;
+        private IWeapon primaryWeapon, secondaryWeapon, activeWeapon;
         private bool attack = false;
 
-        public void InitializeWeapons(InputControl inputControl)
+        public void InitializeWeapons(PlayerCharacter playerCharacter, WeaponBarScript weaponBarScript)
         {
-            this.inputControl = inputControl;
+            this.playerCharacter = playerCharacter;
+            this.weaponBarScript = weaponBarScript;
             weaponFactory = new WeaponFactory();
             primaryWeapon = weaponFactory.SpawnWeapon(WeaponID.PISTON);
-            primaryWeapon.SetWeaponParent(weaponHolder.transform);
+            primaryWeapon.SetWeaponParent(weaponHolder.transform, GunReloading);
 
             secondaryWeapon = weaponFactory.SpawnWeapon(WeaponID.MACHINEGUN);
-            secondaryWeapon.SetWeaponParent(weaponHolder.transform);
+            secondaryWeapon.SetWeaponParent(weaponHolder.transform, GunReloading);
 
             secondaryWeapon.ActivateWeapon();
             activeWeapon = secondaryWeapon;
-
-            inputControl.OnSwitch += SwitchWeapon;
-            inputControl.OnAttack += Attack;
-        }
-
-        private void OnDisable()
-        {
-            inputControl.OnSwitch -= SwitchWeapon;
-            inputControl.OnAttack -= Attack;
         }
 
         private void Update()
         {
-            if (attack)
+            if (attack && !activeWeapon.isReloading)
             {
                 activeWeapon.Fire();
             }
+            weaponBarScript.SetValue(activeWeapon.MagzineFillRatio);
+            activeWeapon.OnUpdate();
         }
 
-        private void Attack(object sender, InputControl.OnAttackEvent e)
+        public void Attack(bool value)
         {
-            attack = e.attack;
+            attack = value;
             if (attack == false)
             {
                 activeWeapon.ReleseFire();
+                playerCharacter.PlayerState = PlayerState.NORMAL;
             }
         }
 
-        public void SwitchWeapon(object sender, EventArgs e)
+        public void SwitchWeapon()
         {
             activeWeapon.DeactivateWeapon();
             activeWeapon = activeWeapon == secondaryWeapon ? primaryWeapon : secondaryWeapon;
             activeWeapon.ActivateWeapon();
+            weaponBarScript.SetValue(activeWeapon.MagzineFillRatio);
         }
 
+        private void GunReloading(bool value)
+        {
+            playerCharacter.PlayerState = value ? PlayerState.RELOAD : PlayerState.NORMAL;
+        }
     }
 }

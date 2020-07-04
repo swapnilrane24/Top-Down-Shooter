@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace TopDownShooter
 {
-    public interface IPlayerGroup
+    public class WeaponBarScript : BarScript
     {
-        void TakeDamage(int value);
+        
     }
 }

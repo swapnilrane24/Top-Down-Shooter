@@ -9,10 +9,12 @@ namespace TopDownShooter
         private Vector3 shotDir;
         private IProjectileParent projectileParent;
         private RaycastHit hit;
+        private int damage;
 
-        public void SetProjectileParent(IProjectileParent projectileParent)
+        public void SetProjectileParent(IProjectileParent projectileParent, int damage)
         {
             this.projectileParent = projectileParent;
+            this.damage = damage;
         }
 
         public void SetDirection(Vector3 shotDir, float range)
@@ -41,7 +43,7 @@ namespace TopDownShooter
                     if (hit.collider.GetComponent<IEnemyGroup>() != null)
                     {
                         Debug.Log("Enemy Detected");
-                        hit.collider.GetComponent<IEnemyGroup>().Damage(15);
+                        hit.collider.GetComponent<IEnemyGroup>().Damage(damage);
                     }
 
                     CancelInvoke();

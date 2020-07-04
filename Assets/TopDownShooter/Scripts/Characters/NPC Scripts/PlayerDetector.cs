@@ -14,11 +14,17 @@ namespace TopDownShooter
     public class PlayerDetector : TargetDetector
     {
         [SerializeField] private float stopChaseRange;
-        private GameObject currentTarget;
 
-        public override GameObject Target => currentTarget;
+        private GameObject currentTarget;
+        private AIControl aiControl;
+
+        public override GameObject Target { get { return currentTarget; } }
         public float StopChaseRange => stopChaseRange;
 
+        public void SetAIController(AIControl aiControl)
+        {
+            this.aiControl = aiControl;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -27,6 +33,7 @@ namespace TopDownShooter
                 if (currentTarget == null)
                 {
                     currentTarget = other.gameObject;
+                    aiControl.Target = currentTarget.transform;
                 }
             }
         }
@@ -38,6 +45,7 @@ namespace TopDownShooter
                 if (other.gameObject == currentTarget)
                 {
                     currentTarget = null;
+                    aiControl.Target = null;
                 }
             }
         }
@@ -46,7 +54,7 @@ namespace TopDownShooter
         private void OnDrawGizmos()
         {
             Handles.color = Color.red;
-            Handles.DrawWireDisc(transform.position, transform.up , stopChaseRange);
+            Handles.DrawWireDisc(transform.position - Vector3.up * 0.98f, transform.up , stopChaseRange);
         }
 #endif
     }

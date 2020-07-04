@@ -1,21 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace TopDownShooter
 {
-    public class HealthBarScript : MonoBehaviour
+    public class HealthBarScript : BarScript
     {
-        [SerializeField] private Image barImage;
 
-        private void Awake()
-        {
-            barImage.fillAmount = 1;
-        }
-
-        public void SetValue(float value)
-        {
-            barImage.DOFillAmount(value, 0.2f);
-        }
     }
 }
