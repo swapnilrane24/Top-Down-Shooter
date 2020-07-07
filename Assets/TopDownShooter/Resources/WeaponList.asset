@@ -35,7 +35,7 @@ MonoBehaviour:
       type: 3}
   - weaponID: 3
     weaponStats:
-      fireRate: 0.15
+      fireRate: 5
       magzineCapacity: 20
       damage: 187
       range: 20
@@ -45,7 +45,7 @@ MonoBehaviour:
       type: 3}
   - weaponID: 4
     weaponStats:
-      fireRate: 0.1
+      fireRate: 10
       magzineCapacity: 30
       damage: 367
       range: 30

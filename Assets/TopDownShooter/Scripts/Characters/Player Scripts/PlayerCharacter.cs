@@ -14,7 +14,7 @@ namespace TopDownShooter
         private WeaponManager weaponManager;
         private HealthBarScript healthBarScript;
         private WeaponBarScript weaponBarScript;
-        private InputControl inputControl;
+        private IInput inputControl;
         private MovementControl movementControl;
         private Transform playerModel;
         private PlayerState playerState = PlayerState.NORMAL;
@@ -36,7 +36,14 @@ namespace TopDownShooter
         protected override void Awake()
         {
             base.Awake();
-            inputControl = new InputControl(this);
+
+            inputControl = new TouchControl();
+
+//#if UNITY_EDITOR
+//            inputControl = new KeyboardControl();
+//#elif UNITY_ANDROID || UNITY_IOS
+//            inputControl = new TouchControl();
+//#endif
             inputControl.SetActionCallbacks(OnGunAttack, OnGunSwitch, OnMeleeAttack);
             healthBarScript = gameObject.GetComponentInChildren<HealthBarScript>();
             weaponBarScript = gameObject.GetComponentInChildren<WeaponBarScript>();

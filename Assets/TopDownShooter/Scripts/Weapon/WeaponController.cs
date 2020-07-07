@@ -10,7 +10,7 @@ namespace TopDownShooter
 
         private WeaponStats weaponStats;
         private ProjectileController projectilePrefab;
-        private float currentFireTime, currentReloadTime, magzineFillRatio;
+        private float timeToFire, currentReloadTime, magzineFillRatio;
         private int currentMagzineFillAmount;
         private List<ProjectileController> deactiveProjectile;
         private Action<bool> coolDownCallback;
@@ -41,17 +41,16 @@ namespace TopDownShooter
 
         public virtual void ReleseFire()
         {
-            currentFireTime = 0;
+            
         }
 
         public virtual void Fire()
         {
             if (!reloading)
             {
-                currentFireTime -= Time.deltaTime;
-                if (currentFireTime <= 0)
+                if (Time.time >= timeToFire)
                 {
-                    currentFireTime = weaponStats.fireRate;
+                    timeToFire = Time.time + 1f / weaponStats.fireRate;
                     CreateProjectile();
                 }
                 magzineFillRatio = (float)currentMagzineFillAmount / weaponStats.magzineCapacity;
@@ -98,6 +97,9 @@ namespace TopDownShooter
                 projectile.transform.position = muzzleFlash.transform.position;
                 projectile.SetDirection(transform.forward, weaponStats.range);
             }
+
+            projectile.transform.rotation = muzzleFlash.transform.rotation;
+
             currentMagzineFillAmount--;
             if (currentMagzineFillAmount <= 0)
             {

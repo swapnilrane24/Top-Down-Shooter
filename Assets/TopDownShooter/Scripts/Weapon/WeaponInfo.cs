@@ -15,7 +15,8 @@ namespace TopDownShooter
     [System.Serializable]
     public struct WeaponStats
     {
-        public float fireRate;
+        [Tooltip("Number of bullets fired per second")]
+        public int fireRate;
         public int magzineCapacity;
         public int damage;
         public float range;

@@ -9,6 +9,7 @@ namespace TopDownShooter
     public class AICharacter : Character, IEnemyGroup
     {
         [SerializeField] private AIInfo aIInfo;
+        [SerializeField] private GameObject zombieDieFxPrefab;
 
         private PlayerDetector targetDetector;
 
@@ -25,6 +26,7 @@ namespace TopDownShooter
             if (currentHealth <= 0)
             {
                 OnKilled?.Invoke(this, null);
+                Instantiate(zombieDieFxPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
@@ -38,7 +40,7 @@ namespace TopDownShooter
         protected override void Start()
         {
             base.Start();
-            health.SetMaxHealth(100);
+            health.SetMaxHealth(1000);
             enemyModel = transform.Find("EnemyModel");
             targetDetector = gameObject.GetComponentInChildren<PlayerDetector>();
             healthBarScript = gameObject.GetComponentInChildren<HealthBarScript>();

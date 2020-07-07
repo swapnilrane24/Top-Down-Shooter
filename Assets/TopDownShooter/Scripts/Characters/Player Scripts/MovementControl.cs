@@ -10,11 +10,11 @@ namespace TopDownShooter
         private float turnSmoothVelocity;
         private PlayerCharacter characterScript;
         private CharacterMovementStats movementStats;
-        private InputControl inputControl;
+        private IInput inputControl;
         private EnemyDetector targetDetector;
 
         public MovementControl(CharacterController controller, PlayerCharacter characterScript,
-            CharacterMovementStats movementStats, InputControl inputControl, EnemyDetector targetDetector)
+            CharacterMovementStats movementStats, IInput inputControl, EnemyDetector targetDetector)
         {
             this.controller = controller;
             this.characterScript = characterScript;
@@ -38,7 +38,6 @@ namespace TopDownShooter
                     float targetAngle = Mathf.Atan2(inputControl.Direction.x, inputControl.Direction.z) * Mathf.Rad2Deg;
                     float angle = Mathf.SmoothDampAngle(characterScript.PlayerModel.eulerAngles.y, targetAngle,
                                                         ref turnSmoothVelocity, movementStats.turnSmoothTime);
-                    //characterScript.transform.rotation = Quaternion.Euler(0f, angle, 0f);
                     characterScript.PlayerModel.rotation = Quaternion.Euler(0f, angle, 0f);
                 }
                 else
@@ -46,7 +45,6 @@ namespace TopDownShooter
                     Vector3 targetPostition = new Vector3(targetDetector.Target.transform.position.x,
                                            characterScript.transform.position.y,
                                            targetDetector.Target.transform.position.z);
-                    //characterScript.transform.LookAt(targetPostition);
                     characterScript.PlayerModel.LookAt(targetPostition);
                 }
 
